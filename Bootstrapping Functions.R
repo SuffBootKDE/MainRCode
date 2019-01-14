@@ -135,8 +135,10 @@ boot.FJ.bw <- function(x, h0 = NA, B = 1000, suff = F, upper.limit = 2){
 	# Initial Smoothing Parameter
 	if(is.na(h0)) h0 <- std.bw(x, "SJ")
 	
-	# Smoothed bootstrap sample)
+	# Smoothed bootstrap sample. Smoothing based on intial h.
 	xx <- boot.smooth(x, B = B, h = h0, suff = suff)
+	
+	Create
 	fx <- fhat(x)
 	fxx <- lapply(xx, fhat) # creating this list is being verrrrry problematic
 	
@@ -186,36 +188,7 @@ suff.bw <-function(x, m = NA, B = 100, suff = T, lower = -5, upper = 5, opt.limi
 	h0 <- std.bw(x, "SJ")
 		# Smoothed bootstrap sample)
 	xx <- boot.samp(x, m = m, B = B, suff = suff)
-	fx <- fhat(x)
-	
-	# This is considered okay.
-	
-	
-	#This function returns the sum of squared bootstrap density deviations from original sample
-	# density estimate at a given set of points, i.e., SUM (f_j - f)^2
-	# CURRENTLY THIS IS HORRIBLY STRUCTURED BUT IT WORKS
-	bigfun<-function(x,h){
-		con <- fx(x,h0)
-		dxx <- colSums(matrix(unlist(
-			lapply(xx, function(c) {
-				n1 <- length(c)
-				h1 <- h*(n0/n1)^(0.2) #1/5 is 1/(2*r +1) and r is kernel order
-				((1/h1)*(1/n1)*colSums(dnorm(outer(c, x, '-')/h1)) - con)^2 } )
-			
-			
-		),B, length(x), T) )
-		return(dxx)
-	}
-	
-	
-	bmise.fj <- function(h){ 
-		
-		quadgk(bigfun, lower, upper, tol = .Machine$double.eps^0.5, h)#SLOW PART ALSO HERE
-		
-	}
-	
-	optimize(bmise.fj, c(0, opt.limit))$minimum # SLOW PART IS HERE
-	
+
 	
 }
 
