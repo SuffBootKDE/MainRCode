@@ -1,4 +1,6 @@
 # gplm, pracma, tictoc
+library(pracma);library(gplm)
+
 
 #### Boot Sample Function ####
 # Generates a list where each list item is a vector of indicies for a bootstrap sample
@@ -73,7 +75,7 @@ boot.indices <- function(n, m = NA, B, suff = F){
 # m = the size of the bootstrap sample. If unspecified (or too large), you get m = n
 # B = number of bootstrap samples desired.
 # suff = the indicator for whether sufficient bootstrapping is to be used
-boot.samp <- function(x, m = NA, B, suff = F){
+boot.samp <- function(x, m = NA, B = 100, suff = F){
 	
 	n = length(x)
 	
@@ -127,7 +129,7 @@ boot.smooth <- function(x, B, m = NA, h = NA, suff = F){
 # upper.limit is the upperbound for the optimize call.
 
 # This currently only works for regular smoothed bootstrap. Need to fix sufficient bootstrap code
-boot.FJ.bw <-function(x, h0 = NA, B = 1000, suff = F, upper.limit = 2){
+boot.FJ.bw <- function(x, h0 = NA, B = 1000, suff = F, upper.limit = 2){
 	
 	n <-length(x)
 	# Initial Smoothing Parameter
@@ -142,7 +144,7 @@ boot.FJ.bw <-function(x, h0 = NA, B = 1000, suff = F, upper.limit = 2){
 	#This function returns the sum of squared bootstrap density deviations from original sample
 	# density estimate at a given set of points, i.e., SUM (f_j - f)^2
 	# CURRENTLY THIS IS HORRIBLY STRUCTURED BUT IT WORKS
-	bigfun<-function(x,h){
+	bigfun <- function(x,h){
 		con <- fx(x,h0)
 		dxx <- colSums(matrix(unlist(
 			lapply(xx, function(c) ((1/n)*colSums((1/h)*dnorm(outer(c, x, '-')/h)) - con)^2 )
@@ -186,6 +188,7 @@ suff.bw <-function(x, m = NA, B = 100, suff = T, lower = -5, upper = 5, opt.limi
 	xx <- boot.samp(x, m = m, B = B, suff = suff)
 	fx <- fhat(x)
 	
+	# This is considered okay.
 	
 	
 	#This function returns the sum of squared bootstrap density deviations from original sample
